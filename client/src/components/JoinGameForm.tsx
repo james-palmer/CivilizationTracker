@@ -60,21 +60,21 @@ export default function JoinGameForm({ onCancel }: JoinGameFormProps) {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      <Card className="bg-background/80 rounded-xl shadow-lg border border-primary/30 backdrop-blur-md">
-        <CardContent className="pt-4">
-          <div className="mb-4 text-center">
-            <h2 className="text-2xl font-['Cinzel'] font-bold">Join Game</h2>
+    <div className="w-full max-w-sm mx-auto px-3">
+      <Card className="bg-background/80 rounded-lg shadow-lg border border-primary/30 backdrop-blur-md">
+        <CardContent className="pt-3">
+          <div className="mb-3 text-center">
+            <h2 className="text-xl font-['Cinzel'] font-bold">Join Game</h2>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3">
             <div className="space-y-1">
-              <Label htmlFor="join-game-code" className="text-sm">Game Code</Label>
+              <Label htmlFor="join-game-code" className="text-xs">Game Code</Label>
               <Input
                 id="join-game-code"
                 value={gameCode}
                 onChange={(e) => setGameCode(e.target.value.toUpperCase())}
-                className="bg-background/70 border-primary/40 font-mono uppercase"
+                className="bg-background/70 border-primary/40 font-mono uppercase h-8 text-sm"
                 placeholder="Enter 6-character code"
                 maxLength={6}
                 required
@@ -82,23 +82,23 @@ export default function JoinGameForm({ onCancel }: JoinGameFormProps) {
             </div>
 
             <div className="space-y-1">
-              <Label htmlFor="join-steam-id" className="text-sm">Your ID</Label>
+              <Label htmlFor="join-steam-id" className="text-xs">Your ID</Label>
               <Input
                 id="join-steam-id"
                 value={steamId}
                 onChange={(e) => setSteamId(e.target.value)}
-                className="bg-background/70 border-primary/40"
+                className="bg-background/70 border-primary/40 h-8 text-sm"
                 placeholder="Your Steam ID"
                 required
               />
             </div>
 
-            <div className="pt-3 flex gap-3">
+            <div className="pt-2 flex gap-2">
               <Button
                 type="button"
                 onClick={onCancel}
                 variant="outline"
-                className="flex-1"
+                className="flex-1 h-8 text-xs"
                 disabled={isLoading}
                 size="sm"
               >
@@ -106,7 +106,7 @@ export default function JoinGameForm({ onCancel }: JoinGameFormProps) {
               </Button>
               <Button
                 type="submit"
-                className="flex-1 bg-secondary hover:bg-secondary/90 text-white"
+                className="flex-1 bg-secondary hover:bg-secondary/90 text-white h-8 text-xs"
                 disabled={isLoading}
                 size="sm"
               >
