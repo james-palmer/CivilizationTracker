@@ -91,12 +91,12 @@ export default function GameSession({ game, currentPlayerSteamId }: GameSessionP
   };
   
   return (
-    <div className="w-full max-w-4xl mx-auto">
-      <Card className="bg-background/60 rounded-xl shadow-lg border border-primary/30 p-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 pb-4 border-b border-primary/20">
+    <div className="w-full max-w-lg mx-auto">
+      <Card className="bg-background/60 rounded-xl shadow-lg border border-primary/30 p-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 pb-3 border-b border-primary/20">
           <div>
-            <h2 className="text-2xl font-['Cinzel'] font-bold mb-1">{game.name}</h2>
-            <div className="flex items-center text-sm text-gray-300">
+            <h2 className="text-xl font-['Cinzel'] font-bold">{game.name}</h2>
+            <div className="flex items-center text-xs text-gray-300">
               <span>Code: </span>
               <span className="ml-1 font-mono">{game.code}</span>
               <button 
@@ -105,26 +105,26 @@ export default function GameSession({ game, currentPlayerSteamId }: GameSessionP
                 aria-label="Copy code"
               >
                 {copied ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
                 ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2" />
                   </svg>
                 )}
               </button>
             </div>
           </div>
-          <div className="mt-4 md:mt-0">
-            <div className={`${isYourTurn ? 'bg-green-500' : 'bg-amber-500'} py-1 px-3 rounded-full text-sm font-medium flex items-center`}>
-              <div className="h-2 w-2 rounded-full bg-white mr-2"></div>
+          <div className="mt-2 sm:mt-0">
+            <div className={`${isYourTurn ? 'bg-green-500' : 'bg-amber-500'} py-1 px-2 rounded-full text-xs font-medium flex items-center`}>
+              <div className="h-1.5 w-1.5 rounded-full bg-white mr-1.5"></div>
               <span>{isYourTurn ? "Your Turn" : "Opponent's Turn"}</span>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Current Player Status */}
           <PlayerStatus 
             name={isPlayer1 ? game.player1SteamId : game.player2SteamId}
@@ -149,16 +149,17 @@ export default function GameSession({ game, currentPlayerSteamId }: GameSessionP
           />
         </div>
 
-        <div className="mt-8 pt-4 border-t border-primary/20 flex flex-col md:flex-row justify-between items-center">
-          <div className="text-sm text-gray-400 mb-4 md:mb-0">
+        <div className="mt-4 pt-3 border-t border-primary/20 flex flex-col sm:flex-row justify-between items-center">
+          <div className="text-xs text-gray-400 mb-2 sm:mb-0">
             <p>Active since: {getTimeSince(game.createdAt)}</p>
           </div>
           <Button 
             variant="ghost" 
             onClick={handleLeaveGame}
-            className="text-gray-300 hover:text-white text-sm flex items-center"
+            className="text-gray-300 hover:text-white text-xs flex items-center"
+            size="sm"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
             Leave Game
