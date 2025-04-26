@@ -1,0 +1,26 @@
+{
+  "name": "Civilization VI Turn Tracker",
+  "short_name": "Civ VI Tracker",
+  "description": "Track turns in Civilization 6 multiplayer games with push notifications",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0F172A",
+  "theme_color": "#0F172A",
+  "icons": [
+    {
+      "src": "https://img.icons8.com/color/96/000000/sid-meiers-civilization.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "https://img.icons8.com/color/192/000000/sid-meiers-civilization.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://img.icons8.com/color/512/000000/sid-meiers-civilization.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
