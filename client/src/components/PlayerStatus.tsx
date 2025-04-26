@@ -2,15 +2,17 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { getTimeSince } from "@/lib/gameService";
 
+type PlayerStatus = "ready" | "busy" | "unavailable";
+
 interface PlayerStatusProps {
   name: string;
   steamId: string;
   status: string;
-  message?: string;
+  message?: string | null;
   lastTurnCompleted?: Date | string | null;
   isCurrentPlayer: boolean;
   isTheirTurn: boolean;
-  onStatusUpdate?: (status: string) => void;
+  onStatusUpdate?: (status: PlayerStatus) => void;
   onCompleteTurn?: () => void;
 }
 
@@ -42,7 +44,7 @@ export default function PlayerStatus({
   };
   
   // Handle status button click
-  const handleStatusButtonClick = (newStatus: string) => {
+  const handleStatusButtonClick = (newStatus: PlayerStatus) => {
     if (onStatusUpdate) {
       onStatusUpdate(newStatus);
     }

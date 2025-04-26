@@ -15,7 +15,7 @@ interface GameSessionProps {
 
 export default function GameSession({ game, currentPlayerSteamId }: GameSessionProps) {
   const [copied, setCopied] = useState(false);
-  const navigate = useNavigate();
+  const [, navigate] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
@@ -58,7 +58,7 @@ export default function GameSession({ game, currentPlayerSteamId }: GameSessionP
     }
   });
   
-  const handleStatusUpdate = (status: string) => {
+  const handleStatusUpdate = (status: "ready" | "busy" | "unavailable") => {
     updateStatusMutation.mutate({
       gameSessionId: game.id,
       steamId: currentPlayerSteamId,

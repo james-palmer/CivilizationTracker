@@ -12,7 +12,7 @@ import { subscribeToPushNotifications } from "@/lib/notifications";
 
 export default function Game() {
   const [, params] = useRoute("/game/:code");
-  const [, navigate] = useLocation();
+  const [, setLocation] = useLocation();
   const [showNotificationBanner, setShowNotificationBanner] = useState(false);
   const [steamId, setSteamId] = useState<string>("");
   
