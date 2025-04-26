@@ -22,12 +22,13 @@ export default function JoinGameForm({ onCancel }: JoinGameFormProps) {
   const joinGameMutation = useMutation({
     mutationFn: joinGame,
     onSuccess: (data) => {
+      const gameSession = data.gameSession;
       toast({
         title: "Game Joined!",
-        description: `Successfully joined game: ${data.name}`,
+        description: `Successfully joined game: ${gameSession.name}`,
       });
       // Navigate to the game page
-      navigate(`/game/${data.code}`);
+      navigate(`/game/${gameSession.code}`);
     },
     onError: (error) => {
       toast({

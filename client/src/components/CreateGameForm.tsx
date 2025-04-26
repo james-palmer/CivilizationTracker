@@ -41,7 +41,7 @@ export default function CreateGameForm({ onCancel }: CreateGameFormProps) {
     mutationFn: joinGame,
     onSuccess: (data) => {
       // Navigate to the game page after joining
-      navigate(`/game/${data.code}`);
+      navigate(`/game/${data.gameSession.code}`);
     },
     onError: (error) => {
       toast({

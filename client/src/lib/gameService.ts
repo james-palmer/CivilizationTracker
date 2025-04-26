@@ -37,10 +37,9 @@ export async function createGameSession(gameData: InsertGameSession): Promise<Ga
 }
 
 // Join an existing game session
-export async function joinGame(joinData: JoinGameData): Promise<GameSessionWithPlayers> {
+export async function joinGame(joinData: JoinGameData): Promise<{gameSession: GameSessionWithPlayers, playerStatus: any}> {
   const res = await apiRequest("POST", "/api/game/join", joinData);
-  const data = await res.json();
-  return data.gameSession;
+  return await res.json();
 }
 
 // Get a game session by code
