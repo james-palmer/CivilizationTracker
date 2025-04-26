@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import GameSession from "@/components/GameSession";
 import NotificationBanner from "@/components/NotificationBanner";
+import BackgroundSlideshow from "@/components/BackgroundSlideshow";
 import { getGameByCode } from "@/lib/gameService";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -71,9 +72,9 @@ export default function Game() {
   // Handle invalid game or missing steamId
   if (!isLoading && (!game || (!steamId && game))) {
     return (
-      <div className="min-h-screen flex flex-col bg-[#0F172A] bg-opacity-80 bg-[url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')] bg-cover bg-center bg-fixed">
+      <BackgroundSlideshow>
         <Header />
-        <main className="flex-1 container mx-auto px-4 py-8 flex items-center justify-center">
+        <main className="flex-1 container mx-auto px-4 py-6 flex items-center justify-center">
           <Alert className="max-w-md">
             <AlertTitle>Game Not Found</AlertTitle>
             <AlertDescription>
@@ -90,15 +91,15 @@ export default function Game() {
           </Alert>
         </main>
         <Footer />
-      </div>
+      </BackgroundSlideshow>
     );
   }
   
   if (error) {
     return (
-      <div className="min-h-screen flex flex-col bg-[#0F172A] bg-opacity-80 bg-[url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')] bg-cover bg-center bg-fixed">
+      <BackgroundSlideshow>
         <Header />
-        <main className="flex-1 container mx-auto px-4 py-8 flex items-center justify-center">
+        <main className="flex-1 container mx-auto px-4 py-6 flex items-center justify-center">
           <Alert variant="destructive" className="max-w-md">
             <AlertTitle>Error</AlertTitle>
             <AlertDescription>
@@ -115,21 +116,21 @@ export default function Game() {
           </Alert>
         </main>
         <Footer />
-      </div>
+      </BackgroundSlideshow>
     );
   }
   
   return (
-    <div className="min-h-screen flex flex-col bg-[#0F172A] bg-opacity-80 bg-[url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')] bg-cover bg-center bg-fixed">
+    <BackgroundSlideshow>
       <Header 
         gameName={game?.name} 
         gameCode={game?.code} 
         isInGame={true} 
       />
-      <main className="flex-1 container mx-auto px-4 py-8">
+      <main className="flex-1 container mx-auto px-4 py-6">
         {isLoading ? (
-          <div className="w-full max-w-4xl mx-auto">
-            <Skeleton className="h-[500px] w-full rounded-xl" />
+          <div className="w-full max-w-lg mx-auto">
+            <Skeleton className="h-[400px] w-full rounded-xl" />
           </div>
         ) : game && steamId ? (
           <GameSession game={game} currentPlayerSteamId={steamId} />
@@ -143,6 +144,6 @@ export default function Game() {
           onClose={() => setShowNotificationBanner(false)} 
         />
       )}
-    </div>
+    </BackgroundSlideshow>
   );
 }

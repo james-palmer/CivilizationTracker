@@ -60,17 +60,16 @@ export default function JoinGameForm({ onCancel }: JoinGameFormProps) {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
+    <div className="w-full max-w-md mx-auto">
       <Card className="bg-background/80 rounded-xl shadow-lg border border-primary/30 backdrop-blur-md">
-        <CardContent className="pt-6">
-          <div className="mb-6 text-center">
-            <h2 className="text-3xl font-['Cinzel'] font-bold mb-2">Join Existing Game</h2>
-            <p className="text-gray-300">Enter the game code shared by your opponent</p>
+        <CardContent className="pt-4">
+          <div className="mb-4 text-center">
+            <h2 className="text-2xl font-['Cinzel'] font-bold">Join Game</h2>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="space-y-2">
-              <Label htmlFor="join-game-code">Game Code</Label>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-1">
+              <Label htmlFor="join-game-code" className="text-sm">Game Code</Label>
               <Input
                 id="join-game-code"
                 value={gameCode}
@@ -82,25 +81,26 @@ export default function JoinGameForm({ onCancel }: JoinGameFormProps) {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="join-steam-id">Your Steam ID</Label>
+            <div className="space-y-1">
+              <Label htmlFor="join-steam-id" className="text-sm">Your ID</Label>
               <Input
                 id="join-steam-id"
                 value={steamId}
                 onChange={(e) => setSteamId(e.target.value)}
                 className="bg-background/70 border-primary/40"
-                placeholder="Your Steam ID or username"
+                placeholder="Your Steam ID"
                 required
               />
             </div>
 
-            <div className="pt-4 flex space-x-4">
+            <div className="pt-3 flex gap-3">
               <Button
                 type="button"
                 onClick={onCancel}
                 variant="outline"
                 className="flex-1"
                 disabled={isLoading}
+                size="sm"
               >
                 Cancel
               </Button>
@@ -108,8 +108,9 @@ export default function JoinGameForm({ onCancel }: JoinGameFormProps) {
                 type="submit"
                 className="flex-1 bg-secondary hover:bg-secondary/90 text-white"
                 disabled={isLoading}
+                size="sm"
               >
-                {isLoading ? "Joining..." : "Join Game"}
+                {isLoading ? "Joining..." : "Join"}
               </Button>
             </div>
           </form>
