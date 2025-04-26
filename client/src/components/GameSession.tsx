@@ -96,22 +96,28 @@ export default function GameSession({ game, currentPlayerSteamId }: GameSessionP
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 pb-3 border-b border-primary/20">
           <div>
             <h2 className="text-xl font-['Cinzel'] font-bold">{game.name}</h2>
-            <div className="flex items-center text-xs text-gray-300">
+            <div className="flex items-center text-xs text-gray-300 mt-1">
               <span>Code: </span>
-              <span className="ml-1 font-mono">{game.code}</span>
+              <span className="ml-1 font-mono bg-background/40 px-1 py-0.5 rounded">{game.code}</span>
               <button 
                 onClick={handleCopyCode} 
-                className="ml-2 text-gray-400 hover:text-white"
+                className={`ml-2 px-1.5 py-0.5 rounded text-xs flex items-center ${copied ? 'bg-green-500 text-white' : 'bg-gray-700 text-gray-200 hover:bg-gray-600'}`}
                 aria-label="Copy code"
               >
                 {copied ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>Copied!</span>
+                  </>
                 ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2" />
-                  </svg>
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    <span>Copy</span>
+                  </>
                 )}
               </button>
             </div>

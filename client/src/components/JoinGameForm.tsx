@@ -70,15 +70,32 @@ export default function JoinGameForm({ onCancel }: JoinGameFormProps) {
           <form onSubmit={handleSubmit} className="space-y-3">
             <div className="space-y-1">
               <Label htmlFor="join-game-code" className="text-xs">Game Code</Label>
-              <Input
-                id="join-game-code"
-                value={gameCode}
-                onChange={(e) => setGameCode(e.target.value.toUpperCase())}
-                className="bg-background/70 border-primary/40 font-mono uppercase h-8 text-sm"
-                placeholder="Enter 6-character code"
-                maxLength={6}
-                required
-              />
+              <div className="relative">
+                <Input
+                  id="join-game-code"
+                  value={gameCode}
+                  onChange={(e) => setGameCode(e.target.value.toUpperCase())}
+                  className="bg-background/70 border-primary/40 font-mono uppercase h-8 text-sm pr-16"
+                  placeholder="Enter 6-character code"
+                  maxLength={6}
+                  required
+                />
+                {gameCode && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(gameCode);
+                      toast({
+                        title: "Code copied",
+                        description: "Game code copied to clipboard"
+                      });
+                    }}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-700 hover:bg-gray-600 text-gray-200 text-xs rounded px-2 py-0.5"
+                  >
+                    Copy
+                  </button>
+                )}
+              </div>
             </div>
 
             <div className="space-y-1">

@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { generateGameCode, createGameSession } from "@/lib/gameService";
+import { generateGameCode, createGameSession, joinGame } from "@/lib/gameService";
 import { useMutation } from "@tanstack/react-query";
 
 interface CreateGameFormProps {
@@ -36,6 +36,23 @@ export default function CreateGameForm({ onCancel }: CreateGameFormProps) {
     setGameCode(code);
   };
 
+  // Join game mutation
+  const joinGameMutation = useMutation({
+    mutationFn: joinGame,
+    onSuccess: (data) => {
+      // Navigate to the game page after joining
+      navigate(`/game/${data.code}`);
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: `Failed to join game: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        variant: "destructive"
+      });
+      setIsLoading(false);
+    }
+  });
+
   const createGameMutation = useMutation({
     mutationFn: createGameSession,
     onSuccess: (data) => {
@@ -43,8 +60,12 @@ export default function CreateGameForm({ onCancel }: CreateGameFormProps) {
         title: "Game Created!",
         description: `Successfully created game: ${data.name}`,
       });
-      // Navigate to the game page
-      navigate(`/game/${data.code}`);
+      
+      // Auto-join the game as player1
+      joinGameMutation.mutate({
+        code: data.code,
+        steamId: player1SteamId
+      });
     },
     onError: (error) => {
       toast({
