@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Civilization Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dark">
+    <div class="background-slideshow">
+        <header class="header">
+            <div class="container">
+                <nav class="nav">
+                    <div class="logo">
+                        <h1>Civilization Tracker</h1>
+                    </div>
+                    <div class="theme-toggle">
+                        <button id="themeToggle" aria-label="Toggle theme">🌙</button>
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+        <main class="main container">
+            <!-- Landing View (Default) -->
+            <div id="landingView" class="view">
+                <div class="hero">
+                    <h1>Track Your Civilization VI Games</h1>
+                    <p>Create or join a game session to track turns and receive notifications</p>
+                    <div class="actions">
+                        <button id="createGameBtn" class="btn btn-primary">Create Game</button>
+                        <button id="joinGameBtn" class="btn btn-secondary">Join Game</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game View (Hidden by default) -->
+            <div id="gameView" class="view hidden">
+                <div class="game-session">
+                    <h2 id="gameName"></h2>
+                    <div class="game-code">
+                        <span>Game Code: </span>
+                        <span id="gameCode"></span>
+                    </div>
+                    <div class="players-list" id="playersList"></div>
+                    <div class="turn-info">
+                        <h3>Current Turn</h3>
+                        <div id="currentTurn"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="container">
+                <p>&copy; 2024 Civilization Tracker</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modals -->
+    <div id="createGameModal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Create New Game</h2>
+            <form id="createGameForm">
+                <div class="form-group">
+                    <label for="newGameName">Game Name</label>
+                    <input type="text" id="newGameName" required>
+                </div>
+                <div class="form-group">
+                    <label for="steamId">Your Steam ID</label>
+                    <input type="text" id="steamId" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Create</button>
+                    <button type="button" class="btn btn-secondary close-modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="joinGameModal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Join Game</h2>
+            <form id="joinGameForm">
+                <div class="form-group">
+                    <label for="gameCodeInput">Game Code</label>
+                    <input type="text" id="gameCodeInput" required>
+                </div>
+                <div class="form-group">
+                    <label for="joinSteamId">Your Steam ID</label>
+                    <input type="text" id="joinSteamId" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Join</button>
+                    <button type="button" class="btn btn-secondary close-modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="notificationBanner" class="notification-banner hidden">
+        <div class="notification-content">
+            <p>Enable notifications to get turn alerts!</p>
+            <button id="enableNotifications" class="btn btn-primary">Enable Notifications</button>
+            <button class="btn btn-icon close-notification">✕</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html> 
