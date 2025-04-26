@@ -152,19 +152,35 @@ export default function CreateGameForm({ onCancel }: CreateGameFormProps) {
                   id="game-code"
                   value={gameCode}
                   onChange={(e) => setGameCode(e.target.value.toUpperCase())}
-                  className="bg-background/70 border-primary/40 font-mono uppercase h-8 text-sm"
+                  className="bg-background/70 border-primary/40 font-mono uppercase h-8 text-sm pr-16"
                   readOnly
                   maxLength={6}
                 />
-                <button
-                  type="button"
-                  onClick={handleRefreshCode}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                </button>
+                <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(gameCode);
+                      toast({
+                        title: "Code copied",
+                        description: "Game code copied to clipboard"
+                      });
+                    }}
+                    className="bg-gray-700 hover:bg-gray-600 text-gray-200 text-xs rounded px-2 py-0.5"
+                  >
+                    Copy
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleRefreshCode}
+                    className="text-gray-400 hover:text-white"
+                    aria-label="Refresh code"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                  </button>
+                </div>
               </div>
               <p className="text-[10px] text-gray-400">Share this code with your opponent</p>
             </div>

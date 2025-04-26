@@ -44,8 +44,15 @@ export async function joinGame(joinData: JoinGameData): Promise<{gameSession: Ga
 
 // Get a game session by code
 export async function getGameByCode(code: string): Promise<GameSessionWithPlayers> {
+  if (!code || code.length !== 6) {
+    throw new Error("Invalid game code");
+  }
+  
   const res = await fetch(`/api/game/code/${code}`);
   if (!res.ok) {
+    if (res.status === 404) {
+      throw new Error("Game not found. Please check the code and try again.");
+    }
     throw new Error(`Failed to fetch game: ${res.statusText}`);
   }
   return res.json();

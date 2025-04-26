@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
-import { joinGame } from "@/lib/gameService";
+import { joinGame, getGameByCode } from "@/lib/gameService";
+import { GameSessionWithPlayers } from "@shared/schema";
 
 interface JoinGameFormProps {
   onCancel: () => void;
@@ -16,8 +18,40 @@ export default function JoinGameForm({ onCancel }: JoinGameFormProps) {
   const [gameCode, setGameCode] = useState("");
   const [steamId, setSteamId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [debouncedCode, setDebouncedCode] = useState("");
+  const [gameDetails, setGameDetails] = useState<GameSessionWithPlayers | null>(null);
   const { toast } = useToast();
   const [, navigate] = useLocation();
+
+  // Debounce the game code for API calls
+  useEffect(() => {
+    if (gameCode.length === 6) {
+      const timer = setTimeout(() => {
+        setDebouncedCode(gameCode);
+      }, 500);
+      return () => clearTimeout(timer);
+    } else {
+      setGameDetails(null);
+      setDebouncedCode("");
+    }
+  }, [gameCode]);
+
+  // Fetch game details when code is entered
+  const { isLoading: isLoadingGame, error } = useQuery({
+    queryKey: [`/api/game/code/${debouncedCode}`],
+    queryFn: () => debouncedCode ? getGameByCode(debouncedCode) : null,
+    enabled: debouncedCode.length === 6,
+    onSuccess: (data) => {
+      if (data) {
+        setGameDetails(data);
+        // Clear any existing steamId selection
+        setSteamId("");
+      }
+    },
+    onError: () => {
+      setGameDetails(null);
+    }
+  });
 
   const joinGameMutation = useMutation({
     mutationFn: joinGame,
@@ -97,19 +131,56 @@ export default function JoinGameForm({ onCancel }: JoinGameFormProps) {
                   </button>
                 )}
               </div>
+              
+              {isLoadingGame && gameCode.length === 6 && (
+                <p className="text-xs text-primary/70 animate-pulse">Looking for game...</p>
+              )}
+              
+              {error instanceof Error && gameCode.length === 6 && (
+                <p className="text-xs text-red-400">{error.message}</p>
+              )}
             </div>
 
-            <div className="space-y-1">
-              <Label htmlFor="join-steam-id" className="text-xs">Your ID</Label>
-              <Input
-                id="join-steam-id"
-                value={steamId}
-                onChange={(e) => setSteamId(e.target.value)}
-                className="bg-background/70 border-primary/40 h-8 text-sm"
-                placeholder="Your Steam ID"
-                required
-              />
-            </div>
+            {gameDetails && (
+              <div className="space-y-2 p-2 bg-background/40 rounded border border-primary/20">
+                <p className="text-xs font-medium">{gameDetails.name}</p>
+                <div className="space-y-1">
+                  <Label className="text-xs mb-1">Select your ID</Label>
+                  <RadioGroup 
+                    value={steamId} 
+                    onValueChange={setSteamId}
+                    className="space-y-1"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value={gameDetails.player1SteamId} id="player1" />
+                      <Label htmlFor="player1" className="text-xs font-mono">
+                        {gameDetails.player1SteamId}
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value={gameDetails.player2SteamId} id="player2" />
+                      <Label htmlFor="player2" className="text-xs font-mono">
+                        {gameDetails.player2SteamId}
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+              </div>
+            )}
+
+            {!gameDetails && (
+              <div className="space-y-1">
+                <Label htmlFor="join-steam-id" className="text-xs">Your ID</Label>
+                <Input
+                  id="join-steam-id"
+                  value={steamId}
+                  onChange={(e) => setSteamId(e.target.value)}
+                  className="bg-background/70 border-primary/40 h-8 text-sm"
+                  placeholder="Your Steam ID"
+                  required
+                />
+              </div>
+            )}
 
             <div className="pt-2 flex gap-2">
               <Button
@@ -125,7 +196,7 @@ export default function JoinGameForm({ onCancel }: JoinGameFormProps) {
               <Button
                 type="submit"
                 className="flex-1 bg-secondary hover:bg-secondary/90 text-white h-8 text-xs"
-                disabled={isLoading}
+                disabled={isLoading || (gameDetails && !steamId)}
                 size="sm"
               >
                 {isLoading ? "Joining..." : "Join"}
