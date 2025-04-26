@@ -80,7 +80,7 @@ export default function Game() {
               {!game ? "The game you're looking for doesn't exist or has expired." : "You need to join this game first."}
               <div className="mt-4">
                 <button 
-                  onClick={() => navigate("/")}
+                  onClick={() => setLocation("/")}
                   className="bg-primary text-white px-4 py-2 rounded-md"
                 >
                   Return Home
@@ -105,7 +105,7 @@ export default function Game() {
               {error instanceof Error ? error.message : "An error occurred loading the game."}
               <div className="mt-4">
                 <button 
-                  onClick={() => navigate("/")}
+                  onClick={() => setLocation("/")}
                   className="bg-primary text-white px-4 py-2 rounded-md"
                 >
                   Return Home
