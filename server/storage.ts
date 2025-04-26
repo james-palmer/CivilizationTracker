@@ -5,6 +5,8 @@ import {
   subscriptions, type Subscription, type InsertSubscription,
   type GameSessionWithPlayers
 } from "@shared/schema";
+import { db } from "./db";
+import { eq, and } from "drizzle-orm";
 
 // modify the interface with any CRUD methods
 // you might need
@@ -34,109 +36,105 @@ export interface IStorage {
   getSubscriptionBySteamId(steamId: string): Promise<Subscription | undefined>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private gameSessions: Map<number, GameSession>;
-  private playerStatuses: Map<string, PlayerStatus>; // compound key: `${gameSessionId}-${steamId}`
-  private subscriptions: Map<string, Subscription>; // key: steamId
-  private currentUserId: number;
-  private currentGameSessionId: number;
-  private currentPlayerStatusId: number;
-  private currentSubscriptionId: number;
-
-  constructor() {
-    this.users = new Map();
-    this.gameSessions = new Map();
-    this.playerStatuses = new Map();
-    this.subscriptions = new Map();
-    this.currentUserId = 1;
-    this.currentGameSessionId = 1;
-    this.currentPlayerStatusId = 1;
-    this.currentSubscriptionId = 1;
-  }
-
-  // User methods
+export class DatabaseStorage implements IStorage {
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentUserId++;
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
     return user;
   }
 
-  // Game session methods
   async createGameSession(session: InsertGameSession): Promise<GameSession> {
-    const id = this.currentGameSessionId++;
-    const createdAt = new Date();
-    const gameSession: GameSession = { ...session, id, createdAt };
-    this.gameSessions.set(id, gameSession);
+    const [gameSession] = await db
+      .insert(gameSessions)
+      .values({
+        ...session,
+        createdAt: new Date()
+      })
+      .returning();
     return gameSession;
   }
 
   async getGameSessionByCode(code: string): Promise<GameSession | undefined> {
-    return Array.from(this.gameSessions.values()).find(
-      (session) => session.code === code,
-    );
+    const [session] = await db
+      .select()
+      .from(gameSessions)
+      .where(eq(gameSessions.code, code));
+    return session || undefined;
   }
 
   async getGameSessionById(id: number): Promise<GameSession | undefined> {
-    return this.gameSessions.get(id);
+    const [session] = await db
+      .select()
+      .from(gameSessions)
+      .where(eq(gameSessions.id, id));
+    return session || undefined;
   }
 
   async getGameSessionWithPlayers(id: number): Promise<GameSessionWithPlayers | undefined> {
     const session = await this.getGameSessionById(id);
     if (!session) return undefined;
-
+    
     const player1Status = await this.getPlayerStatus(id, session.player1SteamId);
     const player2Status = await this.getPlayerStatus(id, session.player2SteamId);
-
+    
     return {
       ...session,
-      player1Status,
-      player2Status,
+      player1Status: player1Status || null,
+      player2Status: player2Status || null
     };
   }
 
   async getGameSessionWithPlayersByCode(code: string): Promise<GameSessionWithPlayers | undefined> {
     const session = await this.getGameSessionByCode(code);
     if (!session) return undefined;
-
+    
     return this.getGameSessionWithPlayers(session.id);
   }
 
   async updateGameSessionTurn(id: number, currentTurn: string): Promise<GameSession | undefined> {
-    const session = await this.getGameSessionById(id);
-    if (!session) return undefined;
-
-    const updatedSession: GameSession = { ...session, currentTurn };
-    this.gameSessions.set(id, updatedSession);
-    return updatedSession;
+    const [updatedSession] = await db
+      .update(gameSessions)
+      .set({ currentTurn })
+      .where(eq(gameSessions.id, id))
+      .returning();
+    
+    return updatedSession || undefined;
   }
 
-  // Player status methods
   async createPlayerStatus(playerStatus: InsertPlayerStatus): Promise<PlayerStatus> {
-    const id = this.currentPlayerStatusId++;
-    const updatedAt = new Date();
-    const status: PlayerStatus = { ...playerStatus, id, updatedAt };
-    
-    const key = `${playerStatus.gameSessionId}-${playerStatus.steamId}`;
-    this.playerStatuses.set(key, status);
-    
+    const [status] = await db
+      .insert(playerStatuses)
+      .values({
+        ...playerStatus,
+        updatedAt: new Date()
+      })
+      .returning();
     return status;
   }
 
   async getPlayerStatus(gameSessionId: number, steamId: string): Promise<PlayerStatus | undefined> {
-    const key = `${gameSessionId}-${steamId}`;
-    return this.playerStatuses.get(key);
+    const [status] = await db
+      .select()
+      .from(playerStatuses)
+      .where(
+        and(
+          eq(playerStatuses.gameSessionId, gameSessionId),
+          eq(playerStatuses.steamId, steamId)
+        )
+      );
+    return status || undefined;
   }
 
   async updatePlayerStatus(
@@ -145,51 +143,94 @@ export class MemStorage implements IStorage {
     status: string, 
     message?: string
   ): Promise<PlayerStatus | undefined> {
-    const key = `${gameSessionId}-${steamId}`;
-    const playerStatus = this.playerStatuses.get(key);
-    
+    const playerStatus = await this.getPlayerStatus(gameSessionId, steamId);
     if (!playerStatus) return undefined;
     
-    const updatedStatus: PlayerStatus = { 
-      ...playerStatus, 
+    const updateValues: Partial<PlayerStatus> = { 
       status, 
-      message: message || playerStatus.message,
-      updatedAt: new Date()
+      updatedAt: new Date() 
     };
     
-    this.playerStatuses.set(key, updatedStatus);
-    return updatedStatus;
+    if (message !== undefined) {
+      updateValues.message = message;
+    }
+    
+    const [updatedStatus] = await db
+      .update(playerStatuses)
+      .set(updateValues)
+      .where(
+        and(
+          eq(playerStatuses.gameSessionId, gameSessionId),
+          eq(playerStatuses.steamId, steamId)
+        )
+      )
+      .returning();
+    
+    return updatedStatus || undefined;
   }
 
   async updatePlayerLastTurn(gameSessionId: number, steamId: string): Promise<PlayerStatus | undefined> {
-    const key = `${gameSessionId}-${steamId}`;
-    const playerStatus = this.playerStatuses.get(key);
-    
+    const playerStatus = await this.getPlayerStatus(gameSessionId, steamId);
     if (!playerStatus) return undefined;
     
-    const updatedStatus: PlayerStatus = { 
-      ...playerStatus, 
-      lastTurnCompleted: new Date(),
-      updatedAt: new Date()
-    };
+    const now = new Date();
     
-    this.playerStatuses.set(key, updatedStatus);
-    return updatedStatus;
+    const [updatedStatus] = await db
+      .update(playerStatuses)
+      .set({ 
+        lastTurnCompleted: now,
+        updatedAt: now
+      })
+      .where(
+        and(
+          eq(playerStatuses.gameSessionId, gameSessionId),
+          eq(playerStatuses.steamId, steamId)
+        )
+      )
+      .returning();
+    
+    return updatedStatus || undefined;
   }
 
-  // Subscription methods
   async saveSubscription(subscription: InsertSubscription): Promise<Subscription> {
-    const id = this.currentSubscriptionId++;
-    const createdAt = new Date();
-    const sub: Subscription = { ...subscription, id, createdAt };
+    // Check if subscription already exists for this steamId
+    const existingSubscription = await this.getSubscriptionBySteamId(subscription.steamId);
     
-    this.subscriptions.set(subscription.steamId, sub);
-    return sub;
+    if (existingSubscription) {
+      // Update the existing subscription
+      const [updatedSubscription] = await db
+        .update(subscriptions)
+        .set({ 
+          endpoint: subscription.endpoint,
+          p256dh: subscription.p256dh,
+          auth: subscription.auth
+        })
+        .where(eq(subscriptions.steamId, subscription.steamId))
+        .returning();
+      
+      return updatedSubscription;
+    } else {
+      // Create a new subscription
+      const [newSubscription] = await db
+        .insert(subscriptions)
+        .values({
+          ...subscription,
+          createdAt: new Date()
+        })
+        .returning();
+      
+      return newSubscription;
+    }
   }
 
   async getSubscriptionBySteamId(steamId: string): Promise<Subscription | undefined> {
-    return this.subscriptions.get(steamId);
+    const [subscription] = await db
+      .select()
+      .from(subscriptions)
+      .where(eq(subscriptions.steamId, steamId));
+    
+    return subscription || undefined;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
